@@ -1,5 +1,6 @@
 #include <string>
 #include <memory>
+#include <math.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -118,13 +119,13 @@ namespace STHMIN003{
                 for(int j = 0; j < height; ++j){
                     pixels.get()[j] = new unsigned char[width];
                     for(int k = 0; k < width; ++k){
-                        ifs.read(&tmp,1);//get pixel values
-                        if (tmp < 0)
-                            pixels.get()[j][k] = (unsigned char)0;
-                        else if(tmp > 255)
-                            pixels.get()[j][k] = (unsigned char)255;
+                        ifs.read(&tmp,sizeof(tmp));//get pixel values
+                        if ( abs((int) tmp - 0) < 0.000001)
+                            pixels.get()[j][k] = 0;
+                        else if( abs((int) tmp - max_value) < 0.000001)
+                            pixels.get()[j][k] = max_value;
                         else
-                            pixels.get()[j][k] = (unsigned char)tmp;
+                            pixels.get()[j][k] = tmp;
                         
                     }///end cols loop
                 }//end rows loop
@@ -138,11 +139,15 @@ namespace STHMIN003{
     void Image::save(std::string filename){
         ofstream ofs(filename,ios::binary|ios::out);
         if(ofs.is_open()){
-            ofs << version +'\n' << comments << to_string(height) +" "+ to_string(width) +'\n'<< max_value;
+            ofs << version << endl
+            	<< comments << endl
+            	<< to_string(height) +" "+ to_string(width) << endl
+            	<< max_value << endl;
+
             for(int j = 0; j < height; ++j){
                 for(int k = 0; k < width; ++k)
-                    // ofs.write((char*)&pixels.get()[j][k],sizeof(char*));
-                    ofs << (unsigned char)pixels.get()[j][k];
+                    ofs.write(reinterpret_cast<char*>(&pixels.get()[j][k]),sizeof(pixels.get()[j][k]));
+                    // ofs << (unsigned char)pixels.get()[j][k];
             }
             cout << endl;
         }else{
