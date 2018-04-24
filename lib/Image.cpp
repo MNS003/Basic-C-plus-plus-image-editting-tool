@@ -29,7 +29,7 @@ namespace STHMIN003{
     }
     //copy ctor
     Image::Image(const Image & other){
-
+		
     }
     //copy assignment ctor
     Image & Image::operator=(const Image & other){
@@ -47,7 +47,11 @@ namespace STHMIN003{
     }
     //addition
     Image & Image::operator+(const Image && other){
-        
+        if(this != &other){
+	        for(int j = 0; j < height; ++j)
+	            for(int k = 0; k < width; ++k)
+	                pixels.get()[j][k] = (int) pixels.get()[j][k] + (int) other.pixels.get()[j][k];
+        }
         return *this;
     }
     //subtraction

@@ -27,16 +27,25 @@ namespace STHMIN003{
             Image(Image && other);
             //move asssignment ctor
             Image & operator=(Image && other);
+
             //addition
-            Image & operator+(const Image && other);
+            Image operator+(const Image && other);//image = img + new Image()
+            Image operator+(const Image & other);//image = img + img2
+
             //subtraction
-            Image & operator-(const Image && other);
+            Image operator-(const Image && other);//image = img - new Image()
+            Image operator-(const Image & other);//image = img - img2
+
             //inversion
             Image & operator!();
             //mask
-            Image & operator/(const Image && other);
+            Image operator/(const Image && other);//image = img / new Image()
+            Image operator/(const Image & other);//image = img / img2
+
             //threshold
-            Image & operator*(const Image &&other);
+            Image operator*(const Image && other);//image = img * new Image()
+            Image operator*(const Image & other);//image = img * img2
+
             //stream in
             std::ostream &operator<<(const Image &&other);
             //stream out
