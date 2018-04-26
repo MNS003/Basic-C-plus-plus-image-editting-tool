@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include <string>
+#include <vector>
 #include <memory>
 #include <iostream>
 
@@ -12,7 +13,7 @@ namespace STHMIN003{
           public:
             int width, height, max_value;
             std::string version, comments;
-            std::unique_ptr <unsigned char *[]> pixels; //make_unique< unique_ptr<unsigned char>[] >(3)
+            std::vector< std::unique_ptr <unsigned char []>> pixels; //make_unique< unique_ptr<unsigned char>[] >(3)
             //default ctor
             Image();
             //dtor 
@@ -37,7 +38,7 @@ namespace STHMIN003{
             Image operator-(const Image & other);//image = img - img2
 
             //inversion
-            Image & operator!();
+            Image operator!();
             //mask
             Image operator/(const Image && other);//image = img / new Image()
             Image operator/(const Image & other);//image = img / img2
@@ -54,6 +55,8 @@ namespace STHMIN003{
             void load(std::string filename);
             //save
             void save(std::string filename);
+            //intialize image vector
+            void make_vector();
 
             class iterator{
                 private:

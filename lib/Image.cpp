@@ -13,18 +13,17 @@ namespace STHMIN003{
     //default ctor
     Image::Image(){
         width = height = 0;
-        pixels = nullptr;
+        make_vector();
     }
     //dtor
     Image::~Image(){
         width = height = 0;
-        pixels = nullptr;
-        for(int i = 0; i < height; ++i)
-            delete[] pixels.get()[i];
+        pixels.clear();
     }
     //ctor with filename
     Image::Image(std::string filename){
-        cout << "ctor" << endl;
+        cout << "ctor with file name" << endl;
+        make_vector();
         load(filename);
     }
     //copy ctor
@@ -46,35 +45,35 @@ namespace STHMIN003{
         return *this;
     }
     //addition
-    Image & Image::operator+(const Image && other){
+    Image  Image::operator+(const Image & other){
         if(this != &other){
 	        for(int j = 0; j < height; ++j)
 	            for(int k = 0; k < width; ++k)
-	                pixels.get()[j][k] = (int) pixels.get()[j][k] + (int) other.pixels.get()[j][k];
+	                pixels[j][k] = (int) pixels[j][k] + (int) other.pixels[j][k];
         }
         return *this;
     }
     //subtraction
-    Image & Image::operator-(const Image && other){
+    Image Image::operator-(const Image && other){
         
         return *this;
     }
     //inversion
-    Image & Image::operator!(){
+    Image Image::operator!(){
         for(int j = 0; j < height; ++j){
             for(int k = 0; k < width; ++k){
-                pixels.get()[j][k] = 255 - pixels.get()[j][k];
+                pixels[j][k] = 255 - pixels[j][k];
                 }
         }
         return *this;
     }
     //mask
-    Image & Image::operator/(const Image && other){
+    Image Image::operator/(const Image && other){
         
         return *this;
     }
     //threshold
-    Image & Image::operator*(const Image && other){
+    Image Image::operator*(const Image && other){
         
         return *this;
     }
@@ -118,18 +117,16 @@ namespace STHMIN003{
                 max >> max_value;
                 cout << max_value << endl;
 
-                pixels = unique_ptr<unsigned char * []>(new unsigned char *[height]);
                 cout << "pixel values" << endl;
                 for(int j = 0; j < height; ++j){
-                    pixels.get()[j] = new unsigned char[width];
                     for(int k = 0; k < width; ++k){
                         ifs.read(&tmp,sizeof(tmp));//get pixel values
                         if ( abs((int) tmp - 0) < 0.000001)
-                            pixels.get()[j][k] = 0;
+                            pixels[j][k] = 0;
                         else if( abs((int) tmp - max_value) < 0.000001)
-                            pixels.get()[j][k] = max_value;
+                            pixels[j][k] = max_value;
                         else
-                            pixels.get()[j][k] = tmp;
+                            pixels[j][k] = tmp;
                         
                     }///end cols loop
                 }//end rows loop
@@ -150,8 +147,7 @@ namespace STHMIN003{
 
             for(int j = 0; j < height; ++j){
                 for(int k = 0; k < width; ++k)
-                    ofs.write(reinterpret_cast<char*>(&pixels.get()[j][k]),sizeof(pixels.get()[j][k]));
-                    // ofs << (unsigned char)pixels.get()[j][k];
+                    ofs.write(reinterpret_cast<char*>(&pixels[j][k]),sizeof(pixels[j][k]));
             }
             cout << endl;
         }else{
@@ -159,6 +155,15 @@ namespace STHMIN003{
         }
         ofs.close();
 
+    }
+
+
+    void Image::make_vector(){
+        for(int i = 0; i < height; ++i){
+            // cout << "Making vector " << endl;
+            std::unique_ptr <unsigned char []> row( new unsigned char [width] );
+            pixels.push_back(move(row));
+        }
     }
 
     // Image::iterator::iterator(unsigned char *p):ptr(p){
