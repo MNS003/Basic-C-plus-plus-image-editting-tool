@@ -13,9 +13,11 @@ namespace STHMIN003{
           public:
             int width, height, max_value;
             std::string version, comments;
-            std::vector< std::unique_ptr <unsigned char []>> pixels; //make_unique< unique_ptr<unsigned char>[] >(3)
+            // std::vector< std::vector< std::unique_ptr<unsigned char>>> pixels; //make_unique< unique_ptr<unsigned char>[] >(3)
+            std::vector< std::vector< unsigned char>> pixels;
             //default ctor
             Image();
+            Image(int width, int height);
             //dtor 
             ~Image();
             //ctor with filename
@@ -56,7 +58,7 @@ namespace STHMIN003{
             //save
             void save(std::string filename);
             //intialize image vector
-            void make_vector();
+            void make_vector(int width, int height);
 
             class iterator{
                 private:
