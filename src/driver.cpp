@@ -5,34 +5,51 @@
 using namespace std;
 int main(int argc , char * argv[]){
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // {
-    //     std::vector< std::vector<std::unique_ptr <unsigned char>>> pixels;
-    //     for(int j = 0; j < 1200; ++j){
-    //         auto row = vector< std::unique_ptr <unsigned char> >();
-    //         for(int i = 0; i < 1000; ++i){
-    //             row.push_back(unique_ptr <unsigned char>( new unsigned char('j') ));
-    //         }
-    //         pixels.push_back(move(row));
-    //     }
-    //     cout << pixels[0][0].get();
-    //     pixels[0][0].reset(new unsigned char('g'));
-    //     cout << pixels[0][0].get() << endl; 
-    // }
+    {
+        // unique_ptr<unsigned char[]> pixels(new unsigned char[100]);
+        // pixels[2] = '5';
+        // cout << pixels[2] << endl;
+        
+    }
     //========================================================================
-    string infile = argv[1], outfile = argv[2];
-    cout << "Started imageops with " << infile << endl;
-    STHMIN003::Image img(infile);
-    img.save(outfile);
-    STHMIN003::Image new_img(outfile);
-    int error_count = 0;
-    for(int j = 0; j < img.height; ++j)
-        for(int k = 0; k < img.width; ++k)
-            if(img.pixels[j][k] != new_img.pixels[j][k])
-                ++error_count;
-    cout << "Testing... \n" << error_count << " errors found" << endl;
-    !new_img;
-    STHMIN003::Image img_plus = new_img + img;
-    new_img.save("inverted.pgm");
-    img_plus.save("solid.pgm");
+    
+    cout << "Started imageops with" << endl;
+    
+    if(string(argv[1]) =="-a"){// -a I1 I2
+    cout << "plus" << endl;
+        string I1 = argv[2], I2 = argv[3];
+        STHMIN003::Image a(I1), b(I2), plus;
+        plus = a + b;
+        plus.save("plus.pgm");
+    }
+    else if (string(argv[1]) == "-s"){// -s I1 I2 (subtract I2 from I1)
+        cout << "subtract" << endl;
+        string I1 = argv[2], I2 = argv[3];
+        STHMIN003::Image a(I1), b(I2), subtract;
+        subtract = a - b;
+        subtract.save("subtract.pgm");
+    }
+    else if (string(argv[1]) == "-i"){// -i I1 (invert I1)
+        cout << "invert" << endl;
+        string I1 = argv[2];
+        STHMIN003::Image invert(I1);
+        !invert;
+        invert.save("invert.pgm");
+    }
+    else if (string(argv[1]) == "-l"){// -l I1 I2 (mask I1 with I2)
+        cout << "mask" << endl;
+        string I1 = argv[2], I2 = argv[3];
+        STHMIN003::Image a(I1), b(I2), mask;
+        mask = a/b;
+        mask.save("mask.pgm");
+    }
+    else if (string(argv[1]) == "-t"){// -t I1 f (threshold I1 with integer value f)
+        cout << "threshold" << endl;
+        string I1 = argv[2];
+        STHMIN003::Image threshold, a(I1);
+        threshold = a*128;
+        threshold.save("threshold.pgm");
+        cout << threshold << endl;
+    }
     cout << "end" << endl;
 }

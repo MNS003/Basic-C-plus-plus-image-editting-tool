@@ -25,7 +25,7 @@ $(BUILD)/%.o: $(TEST_PATH)/%.cpp #builds test objects
 	$(CFLAGS) -c $< -o $@
 
 run:
-	./imageops ./res/Lenna_standard.pgm outfile.pgm
+	./imageops -t ./res/Lenna_standard.pgm ./res/Lenna_hat_mask.pgm
 
 clean: 
 	rm -f imageops test ./build/*

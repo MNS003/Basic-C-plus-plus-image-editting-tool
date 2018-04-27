@@ -13,21 +13,13 @@ namespace STHMIN003{
     //default ctor
     Image::Image(){
         cout << "default ctor" << endl;
-        width = height = 0;
+        width = height = max_value = 0;
         make_vector(width, height);
     }
     //dtor
     Image::~Image(){
         cout << "dtor" << endl;
-        width = height = 0;
-        pixels.clear();
-    }
-    //ctor with vec values
-    Image::Image(int width, int height){
-        cout << "default ctor" << endl;
-        this->width = width;
-        this->height = height;
-        make_vector(width, height);
+        width = height = max_value = 0;
     }
     //ctor with filename
     Image::Image(std::string filename){
@@ -42,11 +34,11 @@ namespace STHMIN003{
             height = other.height;
             version = other.version;
             comments = other.comments;
+            max_value = other.max_value;
             make_vector(width, height);
-            for(int i=0 ; i < height; ++i)
-                for(int j=0 ; j < height; ++j)
-                    pixels[i][j] = other.pixels[i][j];
-                    // pixels[i][j].reset( other.pixels[i][j].get() );
+            int size = width * height;
+            for(int i=0 ; i < size; ++i)
+                pixels[i] = other.pixels[i];
         }
     }
     //copy assignment ctor
@@ -57,10 +49,11 @@ namespace STHMIN003{
             height = other.height;
             version = other.version;
             comments = other.comments;
-            for(int i=0 ; i < height; ++i)
-                for(int j=0 ; j < height; ++j)
-                    pixels[i][j] = other.pixels[i][j];
-                    // pixels[i][j].reset( other.pixels[i][j].get() );
+            max_value = other.max_value;
+            make_vector(width, height);
+            int size = width * height;
+            for(int i=0 ; i < size; ++i)
+                pixels[i] = other.pixels[i];
         }
         return *this;
     }
@@ -72,13 +65,12 @@ namespace STHMIN003{
             height = other.height;
             version = move(other.version);
             comments = move(other.comments);
+            max_value = other.max_value;
             make_vector(width, height);
-            for(int i=0 ; i < height; ++i)
-                for(int j=0 ; j < height; ++j)
-                    pixels[i][j] = other.pixels[i][j];
-                    // pixels[i][j].reset( other.pixels[i][j].get() );
-            width = height = 0;
-            other.pixels.clear();
+            int size = width * height;
+            for(int i=0 ; i < size; ++i)
+                pixels[i] = other.pixels[i];
+            other.width = other.height = other.max_value = 0;
         }
     }
     //move asssignment ctor
@@ -87,125 +79,209 @@ namespace STHMIN003{
         if(this != &other){
             width = other.width;
             height = other.height;
+            max_value = other.max_value;
             version = move(other.version);
             comments = move(other.comments);
-            for(int i=0 ; i < height; ++i)
-                for(int j=0 ; j < height; ++j)
-                    pixels[i][j] = other.pixels[i][j];
-                    // pixels[i][j].reset( other.pixels[i][j].get() );
-            width = height = 0;
-            other.pixels.clear();
+            max_value = other.max_value;
+            make_vector(width,height);
+            for(int i=0 ; i < height * width; ++i)
+                pixels[i] = other.pixels[i];
+            other.width = other.height = other.max_value = 0;
         }
         return *this;
     }
     //addition
     Image Image::operator+(const Image & other){
         cout << "operator+" << endl;
-        Image img(other);
+        Image result(*this);
         if(this != &other){
-	        for(int j = 0; j < height; ++j)
-	            for(int k = 0; k < width; ++k)
-	                img.pixels[j][k] = (unsigned char) ((int) pixels[j][k] + (int) other.pixels[j][k]);
+            int size = width * height;
+	        for(int j = 0; j < size; ++j)
+	            result.pixels[j] = (unsigned char) ((int) pixels[j] + (int) other.pixels[j]);
         }
-        return img;
+        return result;
+    }
+    Image Image::operator+(const Image && other){
+        cout << "operator+" << endl;
+        Image result(*this);
+        if(this != &other){
+            int size = width * height;
+	        for(int j = 0; j < size; ++j)
+	            result.pixels[j] = (unsigned char) ((int) pixels[j] + (int) other.pixels[j]);
+        }
+        return result;
+    }
+
+    //subtraction
+    Image Image::operator-(const Image & other){
+        cout << "operator-" << endl;
+        Image result(*this);
+        if(this != &other){
+            int size = width * height;
+	        for(int j = 0; j < size; ++j)
+	            result.pixels[j] = (unsigned char) ((int) pixels[j] - (int) other.pixels[j]);
+        }
+        return result;
+    }
+    Image Image::operator-(const Image && other){
+        cout << "operator-" << endl;
+        Image result(*this);
+        if(this != &other){
+            int size = width * height;
+	        for(int j = 0; j < size; ++j)
+	            result.pixels[j] = (unsigned char) ((int) pixels[j] - (int) other.pixels[j]);
+        }
+        return result;
     }
 
     //inversion
     Image Image::operator!(){
         cout << "operator!" << endl;
-        for(int j = 0; j < height; ++j){
-            for(int k = 0; k < width; ++k){
-                pixels[j][k] = (unsigned char)( 255 - (int)pixels[j][k]);
-                }
-        }
+        int size = width * height;
+        for(int j = 0; j < size; ++j)
+            pixels[j] = (unsigned char)( 255 - (int)pixels[j]);
         return *this;
     }
  
+    //mask
+    Image Image::operator/(const Image &&other){
+        cout << "operator/" << endl;
+        Image result(*this);
+        int size = width * height;
+        for(int j = 0; j < size ; ++j){
+            unsigned char tmp = other.pixels[j];
+            if (abs((int)tmp - max_value) < 0.000001)
+                result.pixels[j] = (unsigned char)(pixels[j]);
+            else
+                result.pixels[j] = (unsigned char)0;
+        }
+        return result;
+    }
+    Image Image::operator/(const Image &other){
+        cout << "operator/" << endl;
+        Image result(*this);
+        int size = width * height;
+        for(int j = 0; j < size ; ++j){
+            unsigned char tmp = other.pixels[j];
+            if (abs((int)tmp - max_value) < 0.000001)
+                result.pixels[j] = (unsigned char)(pixels[j]);
+            else
+                result.pixels[j] = (unsigned char)0;
+        }
+        return result;
+    }
+
+    //threshold
+    Image Image::operator*(int f){//image = img * 5
+        cout << "operator*" << endl;
+        Image result(*this);
+        int size = width * height;
+        for(int j = 0; j < size; ++j)
+            if ((int)pixels[j] > f)
+                result.pixels[j] = (unsigned char)255;
+            else
+                result.pixels[j] = (unsigned char)0;
+        return result;
+    } 
+    Image Image::operator*(int & f){ //image = img * f
+        cout << "operator*" << endl;
+        Image result(*this);
+        int size = width * height;
+        for(int j = 0; j < size; ++j)
+            if ((int)pixels[j] > f)
+                result.pixels[j] = (unsigned char)255;
+            else
+                result.pixels[j] = (unsigned char)0;
+        return result;
+    }
+
+    //stream out
+    ostream &operator<<(ostream &out, const Image &other){
+        out << "version: " << other.version << endl
+            << "comments: " << other.comments
+            << "width: " << other.width << " height: " << other.height << " " << endl
+            << "max value: " << other.max_value << flush;
+            return out;
+    }
+    //stream in
+    istream &operator>>(istream &in, Image &other){//only allow comments, preserve integrity of img
+        string line;
+        while (getline(in , line))
+            other.comments+= "#" + line +"\n";
+        return in;
+    }
     //load
     void Image::load(std::string filename){
-        cout << "loading" << endl;
+        // cout << "loading" << endl;
         ifstream ifs(filename,ios::binary);
 
         if(ifs.is_open()){
             string line;
-            char tmp;
-            cout << "ifs is open" << endl;
             getline(ifs,line);//pop version
+
             if(line.compare("P5\n")){
                 version = line;
-                cout << "version P5" << endl;
-                while(ifs.get(tmp) && tmp == '#'){//rest of file
-                    getline(ifs,line);//pop comments
+                while(getline(ifs,line) && line[0] == '#'){//pop comments
                     comments += "#" + line +"\n";
-                    cout << "Comment " << line << endl;
                 }
 
-                getline(ifs,line);
-                line = tmp +line;//first digit popped by tmp
-                cout << "dimensions" << endl; 
                 stringstream ss(line);
                 ss >> height >> width;
-                cout << width << " " << height << endl;
 
                 getline(ifs, line);
-                cout << "max value" << endl;
                 stringstream max(line);
                 max >> max_value;
-                cout << max_value << endl;
 
-                cout << "pixel values" << endl;
                 make_vector(width,height);
-                for(int j = 0; j < height; ++j){
-                    for(int k = 0; k < width; ++k){
-                        ifs.read(&tmp,sizeof(tmp));//get pixel values
-                        if ( abs((int) tmp - 0) < 0.000001)
-                            // pixels[j][k].reset((unsigned char*)'\000');
-                            pixels[j][k] = (unsigned char)0;
-                        else if( abs((int) tmp - max_value) < 0.000001)
-                            // pixels[j][k].reset((unsigned char*)(&max_value));
-                            pixels[j][k] = (unsigned char)(max_value);
-                        else
-                            // pixels[j][k].reset((unsigned char*)(&tmp));
-                            pixels[j][k] = (unsigned char)(tmp);
-                        // cout << "found " << endl;
-                    }///end cols loop
-                }//end rows loop
-                
-                cout << "image read" << endl;
+                ifs.read(reinterpret_cast<char *>(pixels.get()), width * height * sizeof(unsigned char)); //get pixel values
+
             }//end version == "P5"
         }else//end ifs is_open 
             cout << "Could not open file" << endl;
     }
     //save
     void Image::save(std::string filename){
-        cout << "saving.." << endl;
+        cout << "saving..." << width << " " << height << endl;
         ofstream ofs(filename,ios::binary|ios::out);
         if(ofs.is_open()){
             ofs << version << endl
             	<< comments << endl
             	<< to_string(height) +" "+ to_string(width) << endl
             	<< max_value << endl;
-
-            for(int j = 0; j < height; ++j){
-                for(int k = 0; k < width; ++k)
-                    ofs.write(reinterpret_cast<char*>(&pixels[j][k]),sizeof(pixels[j][k]));
-            }
-            cout << endl;
+            int array_size = height * height;
+            ofs.write(reinterpret_cast<char*>(pixels.get()),array_size * sizeof(pixels));
         }else{
             cout <<"File not open" << endl;
         }
         ofs.close();
 
     }
-
-
+    //intialize image vector
     void Image::make_vector(int width, int height){
         cout << "Making vector " << width << " "<< height<< endl;
-        pixels.clear();
-        for(int j = 0; j < height; ++j){
-            // vector< unique_ptr<unsigned char >> row(width);
-            vector< unsigned char > row(width);
-            pixels.push_back(move(row));
-        }
+        pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
+    }
+
+    class iterator{
+        private:
+            unsigned char * ptr;
+            iterator(unsigned char * p);
+        public:
+            //copy ctor
+            iterator(const iterator & other){
+
+            }
+            //copy assignment
+            iterator & operator=(const iterator & other){
+
+            }
+            //move ctor
+            iterator( iterator && other){
+
+            }
+            //move assignment
+            iterator &operator=(iterator &&other){
+                
+            }
     }
 }
