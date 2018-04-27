@@ -283,5 +283,5 @@ namespace STHMIN003{
             iterator &operator=(iterator &&other){
                 
             }
-    }
+    };
 }

@@ -70,9 +70,9 @@ namespace STHMIN003{
                 //copy assignment
                 iterator & operator=(const iterator & other);
                 //move ctor
-                iterator(const iterator && other);
+                iterator( iterator && other);
                 //move assignment
-                iterator & operator=(const iterator && other);
+                iterator & operator=( iterator && other);
                 //incriment
                 iterator & operator++();
                 //decriment
