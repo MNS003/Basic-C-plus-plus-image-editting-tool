@@ -13,13 +13,13 @@ namespace STHMIN003{
     //default ctor
     Image::Image(){
         cout << "default ctor" << endl;
-        width = height = max_value = 0;
-        make_vector(width, height);
+        width = height = max_value = size = 0;
+        pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
     }
     //dtor
     Image::~Image(){
         cout << "dtor" << endl;
-        width = height = max_value = 0;
+        width = height = max_value = size = 0;
     }
     //ctor with filename
     Image::Image(std::string filename){
@@ -35,8 +35,8 @@ namespace STHMIN003{
             version = other.version;
             comments = other.comments;
             max_value = other.max_value;
-            make_vector(width, height);
-            int size = width * height;
+            pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
+            size = width * height;
             for(int i=0 ; i < size; ++i)
                 pixels[i] = other.pixels[i];
         }
@@ -50,8 +50,8 @@ namespace STHMIN003{
             version = other.version;
             comments = other.comments;
             max_value = other.max_value;
-            make_vector(width, height);
-            int size = width * height;
+            pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
+            size = width * height;
             for(int i=0 ; i < size; ++i)
                 pixels[i] = other.pixels[i];
         }
@@ -66,8 +66,8 @@ namespace STHMIN003{
             version = move(other.version);
             comments = move(other.comments);
             max_value = other.max_value;
-            make_vector(width, height);
-            int size = width * height;
+            pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
+            size = width * height;
             for(int i=0 ; i < size; ++i)
                 pixels[i] = other.pixels[i];
             other.width = other.height = other.max_value = 0;
@@ -83,8 +83,9 @@ namespace STHMIN003{
             version = move(other.version);
             comments = move(other.comments);
             max_value = other.max_value;
-            make_vector(width,height);
-            for(int i=0 ; i < height * width; ++i)
+            pixels = unique_ptr<unsigned char[]>(new unsigned char[width * height]);
+            size = height * width;
+            for(int i=0 ; i < size; ++i)
                 pixels[i] = other.pixels[i];
             other.width = other.height = other.max_value = 0;
         }
@@ -232,7 +233,7 @@ namespace STHMIN003{
                 stringstream max(line);
                 max >> max_value;
 
-                make_vector(width,height);
+                pixels = unique_ptr<unsigned char[]>(new unsigned char[width * height]);
                 ifs.read(reinterpret_cast<char *>(pixels.get()), width * height * sizeof(unsigned char)); //get pixel values
 
             }//end version == "P5"
@@ -256,32 +257,54 @@ namespace STHMIN003{
         ofs.close();
 
     }
-    //intialize image vector
-    void Image::make_vector(int width, int height){
-        cout << "Making vector " << width << " "<< height<< endl;
-        pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
+    //copy ctor
+    Image::iterator::iterator(const Image::iterator & other){
+        ptr = other.ptr;
+    }
+    //copy assignment
+    Image::iterator & Image::iterator::operator=(const iterator & other){
+        if(this != &other)
+            ptr = other.ptr;
+        return *this;
+    }
+    //move ctor
+    Image::iterator::iterator( iterator && other){
+        ptr = other.ptr;
+        other.ptr = nullptr;
+    }
+    //move assignment
+    Image::iterator & Image::iterator::operator=(iterator &&other){
+        if (this != &other){
+            ptr = other.ptr;
+            other.ptr = nullptr;
+        }
+        return *this;
+    }
+    //incriment
+    Image::iterator & Image::iterator::operator++(){
+            ++(ptr);
+            return *this;
+    }
+    Image::iterator & Image::iterator::operator++(int){
+        auto tmp = *this;
+        Image::iterator::operator++();
+        return tmp;
     }
 
-    class iterator{
-        private:
-            unsigned char * ptr;
-            iterator(unsigned char * p);
-        public:
-            //copy ctor
-            iterator(const iterator & other){
+    //deref
+    unsigned char * Image::iterator::operator*(){
+        return ptr;
+    }
 
-            }
-            //copy assignment
-            iterator & operator=(const iterator & other){
-
-            }
-            //move ctor
-            iterator( iterator && other){
-
-            }
-            //move assignment
-            iterator &operator=(iterator &&other){
-                
-            }
-    };
+    Image::iterator Image::begin(){
+        return iterator(pixels.get());
+    }
+    Image::iterator Image::end(){
+        return nullptr;
+    }
+    bool Image::iterator::operator==(const Image::iterator &other, const Image::iterator &rhs)
+    {
+        return ptr == other.ptr;
+    }
+    
 }

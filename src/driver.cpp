@@ -6,10 +6,16 @@ using namespace std;
 int main(int argc , char * argv[]){
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     {
-        // unique_ptr<unsigned char[]> pixels(new unsigned char[100]);
-        // pixels[2] = '5';
-        // cout << pixels[2] << endl;
-        
+        STHMIN003::Image a(string(argv[2])), rhs();
+
+        STHMIN003::Image::iterator beg = this->begin(), end = this->end();
+        STHMIN003::Image::iterator inStart = rhs.begin(), inEnd = rhs.end();
+        while (beg != end)
+        {
+            *beg = *inStart;
+            ++beg;
+            ++inStart;
+        }
     }
     //========================================================================
     

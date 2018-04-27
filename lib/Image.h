@@ -10,7 +10,7 @@ namespace STHMIN003{
 
     class Image{
         private:
-            int width, height, max_value;
+            int width, height, max_value,size;
             std::string version, comments;
         public:
         std::unique_ptr<unsigned char[]> pixels; //make_unique< unique_ptr<unsigned char>[] >(3)
@@ -57,34 +57,41 @@ namespace STHMIN003{
         void load(std::string filename);
         //save
         void save(std::string filename);
-        //intialize image vector
-        void make_vector(int width, int height);
 
+        class iterator;
+        friend iterator;
         class iterator{
-            private:
-                unsigned char * ptr;
-                iterator(unsigned char * p);
-            public:
-                //copy ctor
-                iterator(const iterator & other);
-                //copy assignment
-                iterator & operator=(const iterator & other);
-                //move ctor
-                iterator( iterator && other);
-                //move assignment
-                iterator & operator=( iterator && other);
-                //incriment
-                iterator & operator++();
-                //decriment
-                iterator & operator--();
-                //deref
-                Image operator*();
+          private:
+            unsigned char *ptr;
+            Image img();
+          public:
+            iterator(unsigned char *p);
+            //copy ctor
+            iterator(const iterator &other);
+            //copy assignment
+            iterator &operator=(const iterator &other);
+            //move ctor
+            iterator(iterator && other);
+            //move assignment
+            iterator &operator=(iterator &&other);
+            //incriment
+            iterator &operator++();
+            iterator &operator++(int);
+            //decriment
+            iterator &operator--();
+            iterator &operator--(int);
+            //deref
+            unsigned char * operator*();
 
-        };
+            //equals
+            friend bool operator==(iterator & rhs, iterator lhs);
+            bool operator!=(iterator & other);
+
+        };//Iterator
 
         iterator begin();
         iterator end();
-    };
+    };//Image
 
 }
 
