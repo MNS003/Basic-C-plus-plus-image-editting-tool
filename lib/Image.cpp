@@ -18,7 +18,8 @@ namespace STHMIN003{
     }
     //ctor for blank image
     Image::Image(int w, int h){
-        cout << "default width and height" << endl;
+        cout << "ctor width and height" << endl;
+        version = "P5";
         width = w;
         height = h;
         max_value = 255;
@@ -225,18 +226,19 @@ namespace STHMIN003{
             if(line.compare("P5\n")){
                 version = line;
                 while(getline(ifs,line) && line[0] == '#'){//pop comments
-                    comments += "#" + line +"\n";
+                    comments += "#" + line;
                 }
 
                 stringstream ss(line);
                 ss >> height >> width;
+                size = width * height;
 
                 getline(ifs, line);
                 stringstream max(line);
                 max >> max_value;
 
-                pixels = unique_ptr<unsigned char[]>(new unsigned char[width * height]);
-                ifs.read(reinterpret_cast<char *>(pixels.get()), width * height * sizeof(unsigned char)); //get pixel values
+                pixels = unique_ptr<unsigned char[]>(new unsigned char[size]);
+                ifs.read(reinterpret_cast<char *>(pixels.get()), size * sizeof(unsigned char)); //get pixel values
 
             }//end version == "P5"
         }else//end ifs is_open 
@@ -244,14 +246,14 @@ namespace STHMIN003{
     }
     //save
     void Image::save(std::string filename){
-        cout << "saving..." << width << " " << height << endl;
+        cout << "saving... " << width << " " << height << endl;
         ofstream ofs(filename,ios::binary|ios::out);
         if(ofs.is_open()){
             ofs << version << endl
             	<< comments << endl
             	<< to_string(height) +" "+ to_string(width) << endl
             	<< max_value << endl;
-            ofs.write(reinterpret_cast<char*>(pixels.get()),size * sizeof(pixels));
+            ofs.write(reinterpret_cast<char*>(pixels.get()),size * sizeof(pixels[0]));
         }else{
             cout <<"File not open" << endl;
         }
@@ -324,6 +326,7 @@ namespace STHMIN003{
     }
 
     Image::iterator Image::end(){
-        return Image::iterator(&pixels.get()[size]);
+        auto end = &pixels[size];
+        return Image::iterator(end);
     }
 }

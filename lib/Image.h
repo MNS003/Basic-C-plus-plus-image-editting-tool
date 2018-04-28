@@ -11,14 +11,12 @@ namespace STHMIN003{
     
     class Image{
         private:
-        public:
             int width, height, max_value,size;
             std::string version, comments;
+        public:
         class iterator{
-
             private:
                 unsigned char *ptr;
-                // STHMIN003::Image img;
             public:
                 iterator(unsigned char *p);
                 //copy ctor
@@ -73,6 +71,7 @@ namespace STHMIN003{
 
         //inversion
         Image operator!();
+        
         //mask
         Image operator/(const Image && other);//image = img / new Image()
         Image operator/(const Image & other);//image = img / img2
