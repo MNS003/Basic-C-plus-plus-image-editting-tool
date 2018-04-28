@@ -5,18 +5,18 @@
 using namespace std;
 int main(int argc , char * argv[]){
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    {
-        STHMIN003::Image a(string(argv[2])), rhs();
+    // {
+    //     STHMIN003::Image a(string(argv[2])), rhs();
 
-        STHMIN003::Image::iterator beg = this->begin(), end = this->end();
-        STHMIN003::Image::iterator inStart = rhs.begin(), inEnd = rhs.end();
-        while (beg != end)
-        {
-            *beg = *inStart;
-            ++beg;
-            ++inStart;
-        }
-    }
+    //     STHMIN003::Image::iterator beg = this->begin(), end = this->end();
+    //     STHMIN003::Image::iterator inStart = rhs.begin(), inEnd = rhs.end();
+    //     while (beg != end)
+    //     {
+    //         *beg = *inStart;
+    //         ++beg;
+    //         ++inStart;
+    //     }
+    // }
     //========================================================================
     
     cout << "Started imageops with" << endl;
