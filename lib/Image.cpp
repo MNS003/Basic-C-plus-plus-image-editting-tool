@@ -16,6 +16,15 @@ namespace STHMIN003{
         width = height = max_value = size = 0;
         pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
     }
+    //ctor for blank image
+    Image::Image(int w, int h){
+        cout << "default width and height" << endl;
+        width = w;
+        height = h;
+        max_value = 255;
+        size = width*height;
+        pixels = unique_ptr<unsigned char []>(new unsigned char[size]);
+    }
     //dtor
     Image::~Image(){
         cout << "dtor" << endl;
@@ -242,8 +251,7 @@ namespace STHMIN003{
             	<< comments << endl
             	<< to_string(height) +" "+ to_string(width) << endl
             	<< max_value << endl;
-            int array_size = height * height;
-            ofs.write(reinterpret_cast<char*>(pixels.get()),array_size * sizeof(pixels));
+            ofs.write(reinterpret_cast<char*>(pixels.get()),size * sizeof(pixels));
         }else{
             cout <<"File not open" << endl;
         }
@@ -298,8 +306,16 @@ namespace STHMIN003{
         --ptr;
         return tmp ;
     }
+
+    bool Image::iterator::operator==(iterator &other){
+        return this->ptr == other.ptr;
+    }
+    bool Image::iterator::operator!=(iterator &other){
+        return this->ptr != other.ptr;
+    }
+
     //deref
-    unsigned char Image::iterator::operator*(){
+    unsigned char& Image::iterator::operator*(){
         return *ptr;
     }
 
@@ -308,6 +324,6 @@ namespace STHMIN003{
     }
 
     Image::iterator Image::end(){
-        return Image::iterator(nullptr);
+        return Image::iterator(&pixels.get()[size]);
     }
 }
