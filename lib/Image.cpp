@@ -23,6 +23,7 @@ namespace STHMIN003{
         width = w;
         height = h;
         max_value = 255;
+        comments = "#Default blank image";
         size = width*height;
         pixels = unique_ptr<unsigned char []>(new unsigned char[size]);
     }

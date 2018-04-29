@@ -13,7 +13,13 @@ namespace STHMIN003{
         private:
             int width, height, max_value,size;
             std::string version, comments;
+            std::unique_ptr<unsigned char[]> pixels; 
         public:
+        //==========GETTERS FOR TESTS====================
+        std::vector<int> get_ints(){return std::vector<int>({width,height,max_value,size});}
+        std::vector<std::string> get_strings() { return std::vector<std::string>({version,comments}); }
+        unsigned char* get_pixels(){return pixels.get();}
+        //===============================================
         class iterator{
             private:
                 unsigned char *ptr;
@@ -42,7 +48,6 @@ namespace STHMIN003{
 
         };//Iterator
 
-        std::unique_ptr<unsigned char[]> pixels; //make_unique< unique_ptr<unsigned char>[] >(3)
 
         //default ctor
         Image();
