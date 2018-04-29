@@ -2,7 +2,7 @@ CFLAGS = g++  -Wall -g -std=c++11
 OBJECTS = ./build/Image.o
 DRIVER = ./build/driver.o
 TEST_PATH = ./tests
-# TEST_OBJECTS = ./build/test_Image.o
+TEST_OBJECTS = ./build/test_Image.o
 LIB = ./lib
 SRC = ./src
 BUILD = ./build
@@ -26,6 +26,10 @@ $(BUILD)/%.o: $(TEST_PATH)/%.cpp #builds test objects
 
 run:
 	./imageops -a ./res/Lenna_standard.pgm ./res/Lenna_hat_mask.pgm
+	./imageops -s ./res/Lenna_standard.pgm ./res/Lenna_hat_mask.pgm
+	./imageops -i ./res/Lenna_standard.pgm ./res/Lenna_hat_mask.pgm
+	./imageops -l ./res/Lenna_standard.pgm ./res/Lenna_hat_mask.pgm
+	./imageops -t ./res/Lenna_standard.pgm ./res/Lenna_hat_mask.pgm
 
 clean: 
 	rm -f imageops test ./build/*

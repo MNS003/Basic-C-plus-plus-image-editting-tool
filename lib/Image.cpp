@@ -97,6 +97,7 @@ namespace STHMIN003{
         }
         return *this;
     }
+    
     //addition
     Image Image::operator+(const Image & other){
         cout << "operator+" << endl;
@@ -112,7 +113,7 @@ namespace STHMIN003{
         cout << "operator+" << endl;
         Image result(*this);
         for(int j = 0; j < size; ++j)
-            if( (int) pixels[j] - (int) other.pixels[j] > 0)
+            if ((int)pixels[j] + (int)other.pixels[j] < max_value)
                 result.pixels[j] = (unsigned char) ((int) pixels[j] - (int) other.pixels[j]);
             else
                 result.pixels[j] = 0;
@@ -124,14 +125,20 @@ namespace STHMIN003{
         cout << "operator-" << endl;
         Image result(*this);
         for(int j = 0; j < size; ++j)
-            result.pixels[j] = (unsigned char) ((int) pixels[j] - (int) other.pixels[j]);
+            if( (int) pixels[j] - (int) other.pixels[j] > 0)
+                result.pixels[j] = (unsigned char) ((int) pixels[j] - (int) other.pixels[j]);
+            else
+                result.pixels[j] = 0;
         return result;
     }
     Image Image::operator-(const Image && other){
         cout << "operator-" << endl;
         Image result(*this);
         for(int j = 0; j < size; ++j)
-            result.pixels[j] = (unsigned char) ((int) pixels[j] - (int) other.pixels[j]);
+            if ((int)pixels[j] - (int)other.pixels[j] > 0)
+                result.pixels[j] = (unsigned char)((int)pixels[j] - (int)other.pixels[j]);
+            else
+                result.pixels[j] = 0;
         return result;
     }
 
@@ -326,7 +333,6 @@ namespace STHMIN003{
     }
 
     Image::iterator Image::end(){
-        auto end = &pixels[size];
-        return Image::iterator(end);
+        return Image::iterator(&pixels[size]);
     }
 }

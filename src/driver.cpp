@@ -4,24 +4,6 @@
 
 using namespace std;
 int main(int argc , char * argv[]){
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // {
-    //     STHMIN003::Image a(argv[2]), rhs(a.width,a.height);
-
-    //     STHMIN003::Image::iterator beg = a.begin(), end = a.end();
-    //     STHMIN003::Image::iterator inStart = rhs.begin();
-    //     int count = 0;
-    //     while (beg != end)
-    //     {
-    //         *inStart = *beg;
-    //         ++beg;
-    //         ++inStart;
-    //         ++count;
-    //     }
-    //     rhs.save("rhs.pgm");
-    // }
-    //========================================================================
-    
     cout << "Started imageops with" << endl;
     
     if(string(argv[1]) =="-a"){// -a I1 I2
@@ -58,7 +40,6 @@ int main(int argc , char * argv[]){
         STHMIN003::Image threshold, a(I1);
         threshold = a*128;
         threshold.save("threshold.pgm");
-        cout << threshold << endl;
     }
     cout << "end" << endl;
 }
