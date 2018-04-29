@@ -16,9 +16,9 @@ namespace STHMIN003{
             std::unique_ptr<unsigned char[]> pixels; 
         public:
         //==========GETTERS FOR TESTS====================
-        std::vector<int> get_ints(){return std::vector<int>({width,height,max_value,size});}
-        std::vector<std::string> get_strings() { return std::vector<std::string>({version,comments}); }
-        unsigned char* get_pixels(){return pixels.get();}
+        std::vector<int> get_ints();//{return std::vector<int>({width,height,max_value,size});}
+        std::vector<std::string> get_strings();// { return std::vector<std::string>({version,comments}); }
+        unsigned char* get_pixels();//{return pixels.get();}
         //===============================================
         class iterator{
             private:

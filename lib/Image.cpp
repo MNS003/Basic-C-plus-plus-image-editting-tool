@@ -33,20 +33,20 @@ namespace STHMIN003{
         width = height = max_value = size = 0;
     }
     //ctor with filename
-    Image::Image(std::string filename){
+    Image::Image(string filename){
         cout << "ctor with file name" << endl;
         load(filename);
     }
     //copy ctor
     Image::Image(const Image & other){
         cout << "copy ctor" << endl;
+        size = other.size;
         width = other.width;
         height = other.height;
         version = other.version;
         comments = other.comments;
         max_value = other.max_value;
         pixels = unique_ptr<unsigned char []>(new unsigned char[width*height]);
-        size = width * height;
         for(int i=0 ; i < size; ++i)
             pixels[i] = other.pixels[i];
     }
@@ -54,6 +54,7 @@ namespace STHMIN003{
     Image & Image::operator=(const Image & other){
         cout << "copy assign" << endl;
         if(this != &other){
+            size = other.size;
             width = other.width;
             height = other.height;
             version = other.version;
@@ -69,6 +70,7 @@ namespace STHMIN003{
     //move ctor
     Image::Image(Image && other){
         cout << "move ctor" << endl;
+        size = other.size;
         width = other.width;
         height = other.height;
         version = move(other.version);
@@ -78,12 +80,13 @@ namespace STHMIN003{
         size = width * height;
         for(int i=0 ; i < size; ++i)
             pixels[i] = other.pixels[i];
-        other.width = other.height = other.max_value = 0;
+        other.size = other.width = other.height = other.max_value = 0;
     }
     //move asssignment ctor
     Image & Image::operator=(Image && other){
         cout << "move assign" << endl;
         if(this != &other){
+            size = other.size;
             width = other.width;
             height = other.height;
             max_value = other.max_value;
@@ -94,7 +97,8 @@ namespace STHMIN003{
             size = height * width;
             for(int i=0 ; i < size; ++i)
                 pixels[i] = other.pixels[i];
-            other.width = other.height = other.max_value = 0;
+
+            other.size = other.width = other.height = other.max_value = 0;
         }
         return *this;
     }
@@ -223,10 +227,9 @@ namespace STHMIN003{
         return in;
     }
     //load
-    void Image::load(std::string filename){
+    void Image::load(string filename){
         // cout << "loading" << endl;
-        ifstream ifs(filename,ios::binary);
-
+        ifstream ifs(filename,ios::binary|ios::in);
         if(ifs.is_open()){
             string line;
             getline(ifs,line);//pop version
@@ -234,7 +237,7 @@ namespace STHMIN003{
             if(line.compare("P5\n")){
                 version = line;
                 while(getline(ifs,line) && line[0] == '#'){//pop comments
-                    comments += "#" + line;
+                    comments += line;
                 }
 
                 stringstream ss(line);
@@ -253,7 +256,7 @@ namespace STHMIN003{
             cout << "Could not open file" << endl;
     }
     //save
-    void Image::save(std::string filename){
+    void Image::save(string filename){
         cout << "saving... " << width << " " << height << endl;
         ofstream ofs(filename,ios::binary|ios::out);
         if(ofs.is_open()){
@@ -268,6 +271,10 @@ namespace STHMIN003{
         ofs.close();
 
     }
+
+    vector<int> Image::get_ints() { return vector<int>({width, height, max_value, size}); }
+    vector<string> Image::get_strings() { return vector<string>({version, comments}); }
+    unsigned char* Image::get_pixels() { return pixels.get(); }
 
     //iterator class
 
